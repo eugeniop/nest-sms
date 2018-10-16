@@ -440,7 +440,7 @@ function getTemperaturesFromThermostat(thermostat){
 }
 
 function findUserByPhone(access_token, phone, done){
-    request.get( utl.format("https://%s/api/v2/users?per_page=1&connection=nest&q=app_metadata.phone%3A\"%s"), config.A0_DOMAIN, encodeURIComponent(phone)),{
+    request.get( utl.format("https://%s/api/v2/users?per_page=1&connection=nest&q=app_metadata.phone%3A\"%s", config.A0_DOMAIN, encodeURIComponent(phone)),{
         headers: { Authorization: 'Bearer ' + access_token }
     }, (e, s, b) => { 
     console.log(b);
