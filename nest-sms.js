@@ -34,7 +34,7 @@ server.use((req, res, next) => {
     if(config){
       return next();
     }
-    request.get('https://wt-eugenio-pace-gmail-com-0.sandbox.auth0-extend.com/config',
+    request.get(req.webtaskContext.data.CONFIG_URL,
                 {
                   headers: {
                     Authorization: req.webtaskContext.data['CONFIG_API_KEY']
