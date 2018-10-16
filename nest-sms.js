@@ -20,7 +20,7 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use(cookieParser());
 server.use(cookieSession({
   name: 'session',
-  keys: ['This is the session pasword']
+  keys: ['This is the session pasword - replace with your own']
 }));
 
 //A handler for all errors
