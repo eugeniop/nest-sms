@@ -152,7 +152,7 @@ server.get('/callback', (req, res, next) => {
   if(req.session.nest_sms.state !== req.query.state){ return next(new Error('Invalid session')); }
 
   //Exchange code for token
-  request.post('https://eugeniop.auth0.com/oauth/token', {
+  request.post(util.format('https://%s/oauth/token', config.A0_DOMAIN), {
     form:{
       grant_type: 'authorization_code',
       client_id: req.webtaskContext.secrets.A0_CLIENT_ID,
@@ -238,7 +238,7 @@ server.post('/phone_verify', requiresAuth, (req, res, next)=>{
         },
         (cb)=>{
           //Update user app_metadata with phone
-          request.patch('https://eugeniop.auth0.com/api/v2/users/' + req.session.nest_sms.user_id, {
+          request.patch(util.format('https://%s/api/v2/users/', config.A0_DOMAIN) + req.session.nest_sms.user_id, {
             headers: {
               Authorization: 'Bearer ' + locals.a0_access_token
           },
@@ -440,7 +440,7 @@ function getTemperaturesFromThermostat(thermostat){
 }
 
 function findUserByPhone(access_token, phone, done){
-    request.get("https://eugeniop.auth0.com/api/v2/users?per_page=1&connection=nest&q=app_metadata.phone%3A\""+ encodeURIComponent(phone) + "\"&search_engine=v3",{
+    request.get( utl.format("https://%s/api/v2/users?per_page=1&connection=nest&q=app_metadata.phone%3A\"%s"), config.A0_DOMAIN, encodeURIComponent(phone)),{
         headers: { Authorization: 'Bearer ' + access_token }
     }, (e, s, b) => { 
     console.log(b);
@@ -567,11 +567,11 @@ function getDevices(phone, done){
 // Uses Client Credentials to obtain a Mgmt API access_token that can quer
 // user info 
 function getAuth0AccessToken(client_id,client_secret,done){
-  request.post('https://eugeniop.auth0.com/oauth/token',{
+  request.post(util.format('https://%s/oauth/token', config.A0_DOMAIN),{
     json: {
       client_id: client_id,
       client_secret: client_secret,
-      audience: "https://eugeniop.auth0.com/api/v2/",
+      audience: util.format("https://%s/api/v2/", config.A0_DOMAIN),
       grant_type: "client_credentials"
     }
   }, (e, s, b) => {
