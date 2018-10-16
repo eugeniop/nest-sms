@@ -289,7 +289,7 @@ function getCameraSnapshot(phone, name, done){
         getAuth0AccessToken(config.A0_CLIENT_ID, config.A0_CLIENT_SECRET, (e, t) => {
           if(e) { return cb(e); }
           locals.access_token = t;
-          //console.log(t);
+          console.log(t);
           cb();
         });
       },
@@ -298,7 +298,7 @@ function getCameraSnapshot(phone, name, done){
         findUserByPhone(locals.access_token, phone, (e, user) => {
           if(e) { return cb(e); }
           locals.user = user;
-          //console.log(user);
+          console.log(user);
           cb();
         });
       },
@@ -318,7 +318,7 @@ function getCameraSnapshot(phone, name, done){
           var camera = _.find(NESTInfo.devices.cameras, (c)=>c.name.toLowerCase() === name.toLowerCase());
           if(!camera){ return cb('Camera not found'); }
           locals.camera = camera;
-          //console.log(camera);
+          console.log(camera);
           cb();
         });
       },
@@ -440,7 +440,7 @@ function getTemperaturesFromThermostat(thermostat){
 }
 
 function findUserByPhone(access_token, phone, done){
-    request.get( util.format("https://%s/api/v2/users?per_page=1&connection=nest&q=app_metadata.phone%3A\"%s", config.A0_DOMAIN, encodeURIComponent(phone)),{
+    request.get( util.format("https://%s/api/v2/users?per_page=1&connection=nest&q=app_metadata.phone%3A\"%s\"&search_engine=v3", config.A0_DOMAIN, encodeURIComponent(phone)),{
         headers: { Authorization: 'Bearer ' + access_token }
     }, (e, s, b) => { 
     console.log(b);
