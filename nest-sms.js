@@ -739,12 +739,6 @@ function buildHelp(menu) {
   }).join('\n');
 }
 
-/*
-  Accepted inputs are:
-  {verb} {command}
-  s 4 great  -> sleep 4 hours, note: great
-  m 3 blues  -> mood 3, note: blues
-*/
 function parseInput(req) {
   var output = {};
   var input = req.body.Body.trim().toLowerCase();
