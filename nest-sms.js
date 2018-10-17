@@ -491,11 +491,6 @@ function setThermostatTemperature(phone, thermostatName, target_c, done){
       },
       //Call NEST API with access_token to change temperature
       (cb)=>{
-
-        // console.log('Setting new T to ', target_c);
-        // console.log('Th',locals.thermostat.device_id );
-        // console.log('N at',locals.nest_access_token );
-
         request.put('https://developer-api.nest.com/devices/thermostats/' + locals.thermostat.device_id, {
             headers: {
               Authorization: 'Bearer ' + locals.nest_access_token,
@@ -518,6 +513,19 @@ function setThermostatTemperature(phone, thermostatName, target_c, done){
   });
 }
 
+/* 
+  Returns all devices associated with a phone
+  {
+    cameras: [
+      "Driveway",
+      "Side of the house"
+    ],
+    thermostats: {
+      "kitchen",
+      "bedroom"
+    }
+  }
+*/
 function getDevices(phone, done){
   var locals = {};
   locals.result = {};
