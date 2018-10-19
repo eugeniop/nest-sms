@@ -188,19 +188,21 @@ server.post('/phone_subscription', requiresAuth, (req, res, next)=>{
                         sid: config.TW_ACCOUNT_SID,
                         token: config.TW_ACCOUNT_TOKEN
                         },
-                        phone, "Your code is: " + otp, (e)=>{
-      saveSubscriptionOTC(req.webtaskContext, phone, otp, (e)=>{
-        if(e){
-          req.session = null;
-          return next(e);
-        }
-        req.session.nest_sms.phone = phone;
-        res.end(ejs.render(hereDoc(otpForm), {
-                                              phone_verify_endpoint: util.format("https://%s/nest-sms/phone_verify",req.hostname),
-                                              state: req.session.nest_sms.state
-                                            }));
-      });
-    });
+                        phone, "Your code is: " + otp, 
+                        (sms_e) => {
+                          if(sms_e){ return next("Failed to send OTP"); }
+                          saveSubscriptionOTC(req.webtaskContext, phone, otp, (save_otc_error) => {
+                            if(save_otc_error){
+                              req.session = null;
+                              return next(save_otc_error);
+                            }
+                            req.session.nest_sms.phone = phone;
+                            res.end(ejs.render(hereDoc(otpForm), {
+                                                                  phone_verify_endpoint: util.format("https://%s/nest-sms/phone_verify",req.hostname),
+                                                                  state: req.session.nest_sms.state
+                                                                }));
+                          });
+                      });
   } else {
     req.session = null;
     next(new Error("Invalid session"));
