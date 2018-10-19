@@ -198,7 +198,7 @@ server.post('/phone_subscription', requiresAuth, (req, res, next)=>{
                             }
                             req.session.nest_sms.phone = phone;
                             res.end(ejs.render(hereDoc(otpForm), {
-                                                                  phone_verify_endpoint: util.format("https://%s/nest-sms/phone_verify",req.hostname),
+                                                                  phone_verify_endpoint: util.format("https://%s/nest-sms/phone_verify", req.hostname),
                                                                   state: req.session.nest_sms.state
                                                                 }));
                           });
@@ -268,15 +268,15 @@ server.post('/phone_verify', requiresAuth, (req, res, next)=>{
 });
 
 function saveSubscriptionOTC(ctx, phone, otc, done){
-  ctx.storage.get((error, data) => {
-      if(error){ return done(error); }
+  ctx.storage.get((get_error, data) => {
+      if(get_error){ return done(get_error); }
       if(!data){ data = {}; }
       data[otc] = {
                     phone: phone,
                     created_at: new Date()
                   };
-      ctx.storage.set(data, (error) => {
-          if(error){ return done(error); }
+      ctx.storage.set(data, (set_error) => {
+          if(set_error){ return done(set_error); }
           done(null);
       });
     });
@@ -308,7 +308,7 @@ function getCameraSnapshot(phone, name, done){
       (cb)=>{
         //console.log("Id",locals.user.identities[0]);
         request.get('https://developer-api.nest.com', {
-            headers:{
+            headers: {
               Authorization: 'Bearer ' + locals.user.identities[0].access_token,
             }
         }, (e, s, b) => {
@@ -327,15 +327,11 @@ function getCameraSnapshot(phone, name, done){
       (cb)=>{
         var j = require('jimp');
         j.read(locals.camera.snapshot_url, (e, image)=>{
-          if(e){ cb(e); }
+          if(e){ return cb(e); }
           image.resize(450, j.AUTO);
           image.sepia();
           j.loadFont(j.FONT_SANS_64_WHITE, (e, font)=>{
-            if(!e){
-              image.print(font, 0, 0, name);
-            } else {
-              console.log(e);
-            }
+            image.print(font, 0, 0, name);
             image.getBase64(j.MIME_JPEG, (e, base64Image) => {
               if(e){ return cb(e); }
               locals.base64Image = base64Image;
@@ -348,7 +344,6 @@ function getCameraSnapshot(phone, name, done){
       (cb)=>{
         saveCompressedImage(phone, locals.base64Image, (e, url) => {
           if(e){ return cb(e);}
-          console.log('saved to', url);
           locals.snapshot_url = url;
           cb();
         });
@@ -367,11 +362,11 @@ function saveCompressedImage(phone, image, done){
           .insertOne({
             snapshot_id: id,
             phone: phone,
-            image: image          
+            image: image
           }, (e, r) => {
               client.close();
               if(e){ return done(err); }
-              done(null, util.format('https://%s/nest-sms/snapshots/%s','wt-eugenio-pace-gmail-com-0.sandbox.auth0-extend.com',id));
+              done(null, util.format('https://%s/nest-sms/snapshots/%s', 'wt-eugenio-pace-gmail-com-0.sandbox.auth0-extend.com', id));
           });
     });
 }
@@ -400,7 +395,7 @@ function getTemperatures(phone, command, done){
       (cb)=>{
         //console.log("Id",locals.user.identities[0]);
         request.get('https://developer-api.nest.com',{
-            headers:{ 
+            headers: { 
               Authorization: 'Bearer ' + locals.user.identities[0].access_token,
             }
         }, (e, s, b) => {
@@ -415,9 +410,9 @@ function getTemperatures(phone, command, done){
           //If no thermostat is specified, we return an array of all thermostats in the account
           if(!command){
             locals.result.thermostats = [];
-            _.forOwn(thermostats,(t)=>{
+            _.forOwn(thermostats, (t) => {
               locals.result.thermostats.push(getTemperaturesFromThermostat(t));
-            });  
+            });
           } else {
             locals.result.thermostat = getTemperaturesFromThermostat(_.find(thermostats, (t) => t.name.toLowerCase() === command.toLowerCase()));
           }
@@ -479,7 +474,7 @@ function setThermostatTemperature(phone, thermostatName, target_c, done){
       //Find te thermostats
       (cb)=>{
         request.get('https://developer-api.nest.com', {
-            headers: { 
+            headers: {
               Authorization: 'Bearer ' + locals.nest_access_token,
             }
         }, (e, s, b) => {
